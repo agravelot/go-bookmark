@@ -20,7 +20,7 @@ func init() {
 
 func main() {
 
-	discord, err := discordgo.New("Bot " + "NjIzOTgyOTc2OTU4NDY0MDA2.Xei_TA.27ZAAHIpRbInxPCnfnZ36Wva5YA")
+	discord, err := discordgo.New("Bot " + Token)
 
 	if err != nil {
 		log.Fatal("Unable to start discord bot ", err)

@@ -68,22 +68,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Fatal("Unable to add reaction ", err)
 		}
 	}
-
-	// If the message is "ping" reply with "Pong!"
-	if m.Content == "ping" {
-		_, err := s.ChannelMessageSend(m.ChannelID, "Pong!")
-		if err != nil {
-			log.Fatal("Unable to reply ", err)
-		}
-	}
-
-	// If the message is "pong" reply with "Ping!"
-	if m.Content == "pong" {
-		_, err := s.ChannelMessageSend(m.ChannelID, "Ping!")
-		if err != nil {
-			log.Fatal("Unable to reply ", err)
-		}
-	}
 }
 
 func messageReactionAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {

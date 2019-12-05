@@ -21,10 +21,7 @@ func init() {
 func main() {
 
 	discord, err := discordgo.New("Bot " + Token)
-
-	if err != nil {
-		log.Fatal("Unable to start discord bot ", err)
-	}
+	check(err)
 
 	// Register the messageCreate func as a callback for MessageCreate events.
 	discord.AddHandler(messageCreate)
@@ -32,9 +29,7 @@ func main() {
 
 	// Open a websocket connection to Discord and begin listening.
 	err = discord.Open()
-	if err != nil {
-		log.Fatal("Unable to open websocket connection ", err)
-	}
+	check(err)
 
 	// Cleanly close down the Discord session.
 	defer discord.Close()
@@ -55,79 +50,58 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	isDM, err := isDM(s, m.Message)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	if m.Author.Bot && !isDM {
 		err := s.MessageReactionAdd(m.Message.ChannelID, m.Message.ID, "⭐")
-		if err != nil {
-			log.Fatal("Unable to add reaction ", err)
-		}
+		check(err)
 	}
 }
 
 func messageReactionAdd(s *discordgo.Session, m *discordgo.MessageReactionAdd) {
-	log.Println(m.MessageReaction.Emoji.Name)
-
 	message, err := s.ChannelMessage(m.ChannelID, m.MessageID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	isDM, err := isDM(s, message)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	user, err := s.User(m.MessageReaction.UserID)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	if m.MessageReaction.Emoji.Name == "⭐" && user.Bot == false && !isDM {
 
 		user, err := s.User(m.MessageReaction.UserID)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 
 		dmChannel, err := s.UserChannelCreate(user.ID)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 
 		message, err := s.ChannelMessageSend(dmChannel.ID, message.Content)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 
 		err = s.MessageReactionAdd(message.ChannelID, message.ID, "❌")
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 
 		for _, embed := range message.Embeds {
 			// Send message to user with embed content
 			message, err = s.ChannelMessageSendEmbed(dmChannel.ID, embed)
-			if err != nil {
-				log.Fatal(err)
-			}
+			check(err)
 			// Add reaction
 			err = s.MessageReactionAdd(message.ChannelID, message.ID, "❌")
-			if err != nil {
-				log.Fatal(err)
-			}
+			check(err)
 		}
 	}
 
 	if m.MessageReaction.Emoji.Name == "❌" && user.Bot == false && isDM {
 		err := s.ChannelMessageDelete(m.ChannelID, m.MessageID)
-		if err != nil {
-			log.Fatal(err)
-		}
+		check(err)
 	}
+}
 
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // isDM returns true if a message comes from a DM channel

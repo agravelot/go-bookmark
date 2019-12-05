@@ -39,10 +39,7 @@ func main() {
 	// Cleanly close down the Discord session.
 	defer discord.Close()
 
-	log.Println("I'm running!")
-
-	// Wait here until CTRL-C or other term signal is received.
-	log.Println("Press CTRL-C to exit.")
+	log.Println("I'm running! Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -53,9 +50,9 @@ func main() {
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages posted by **non** bot
-	//if m.Author.Bot == false {
-	//	return
-	//}
+	if m.Author.Bot == false {
+		return
+	}
 
 	isDM, err := isDM(s, m.Message)
 	if err != nil {
